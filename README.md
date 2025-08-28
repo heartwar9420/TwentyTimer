@@ -36,7 +36,7 @@ python main.py
 ---
 
 
-## 📂 專案結構
+##  專案結構
 
 ```
 
@@ -48,13 +48,13 @@ python main.py
 
 ---
 
-## 🖼️ 範例畫面
+##  範例畫面
 
 <img width="392" height="452" alt="image" src="https://github.com/user-attachments/assets/dad3b468-7c14-4d27-808c-4da27bd23722" />
 
 ---
 
-## 🔮 未來改進方向
+##  未來改進方向
 
 * 加入 GUI 介面設定（可直接調整工作/休息時間）
 
