@@ -50,7 +50,7 @@ python main.py
 
 ##  範例畫面
 
-<img width="392" height="452" alt="image" src="https://github.com/user-attachments/assets/dad3b468-7c14-4d27-808c-4da27bd23722" />
+![20-20-20](https://github.com/user-attachments/assets/48b7e46a-299d-4319-af22-cdcbba41dc5f)
 
 ---
 
