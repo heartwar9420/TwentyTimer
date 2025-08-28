@@ -52,7 +52,7 @@ python main.py
 
 ##  專案範例
 
-(assets/TwentyTimer.jpg)
+![範例](assets/TwentyTimer.jpg)
 
 
 ##  未來改進方向
