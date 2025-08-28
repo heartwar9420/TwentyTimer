@@ -48,11 +48,6 @@ python main.py
 
 ---
 
-##  範例畫面
-
-![20-20-20](https://github.com/user-attachments/assets/48b7e46a-299d-4319-af22-cdcbba41dc5f)
-
----
 
 ##  未來改進方向
 
