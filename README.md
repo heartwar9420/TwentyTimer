@@ -40,7 +40,7 @@ python main.py
 
 ##  專案結構
 
-```
+
 
 ├── main.py          # 主程式
 ├── config.json      # 使用者自訂設定
@@ -49,6 +49,10 @@ python main.py
 └── .gitignore       # 忽略不必要的檔案
 
 ---
+
+##  專案範例
+
+(assets/TwentyTimer.jpg)
 
 
 ##  未來改進方向
