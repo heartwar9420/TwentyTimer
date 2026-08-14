@@ -22,6 +22,8 @@ final class AppSettings: ObservableObject, Codable {
 
     // 外觀
     @Published var showTimeInMenuBar: Bool = true { didSet { save() } }
+    /// 休息結束時把游標自動移到「繼續工作」按鈕上
+    @Published var moveMouseToButton: Bool = true { didSet { save() } }
 
     // 彈窗上次被拖到的位置（nil = 用預設的右上角）
     @Published var panelX: Double? = nil { didSet { save() } }
@@ -72,7 +74,7 @@ final class AppSettings: ObservableObject, Codable {
     enum CodingKeys: String, CodingKey {
         case version, workMinutes, restSeconds, idlePauseSeconds
         case soundOnRestStart, soundOnRestEnd, soundName, soundGain, soundRepeat
-        case deferWhenMicInUse, showTimeInMenuBar, panelX, panelY
+        case deferWhenMicInUse, showTimeInMenuBar, moveMouseToButton, panelX, panelY
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -88,6 +90,7 @@ final class AppSettings: ObservableObject, Codable {
         soundRepeat = try c.decodeIfPresent(Int.self, forKey: .soundRepeat) ?? soundRepeat
         deferWhenMicInUse = try c.decodeIfPresent(Bool.self, forKey: .deferWhenMicInUse) ?? deferWhenMicInUse
         showTimeInMenuBar = try c.decodeIfPresent(Bool.self, forKey: .showTimeInMenuBar) ?? showTimeInMenuBar
+        moveMouseToButton = try c.decodeIfPresent(Bool.self, forKey: .moveMouseToButton) ?? moveMouseToButton
         panelX = try c.decodeIfPresent(Double.self, forKey: .panelX)
         panelY = try c.decodeIfPresent(Double.self, forKey: .panelY)
     }
@@ -105,6 +108,7 @@ final class AppSettings: ObservableObject, Codable {
         try c.encode(soundRepeat, forKey: .soundRepeat)
         try c.encode(deferWhenMicInUse, forKey: .deferWhenMicInUse)
         try c.encode(showTimeInMenuBar, forKey: .showTimeInMenuBar)
+        try c.encode(moveMouseToButton, forKey: .moveMouseToButton)
         try c.encodeIfPresent(panelX, forKey: .panelX)
         try c.encodeIfPresent(panelY, forKey: .panelY)
     }

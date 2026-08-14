@@ -78,6 +78,12 @@ struct SettingsView: View {
 
             Section("外觀與啟動") {
                 Toggle("在選單列顯示倒數時間", isOn: $settings.showTimeInMenuBar)
+                VStack(alignment: .leading, spacing: 2) {
+                    Toggle("休息結束時自動把滑鼠移到「繼續工作」上", isOn: $settings.moveMouseToButton)
+                    Text("回座後不用找按鈕，直接按左鍵即可。若當下正在拖曳東西會自動跳過，不會搶走游標。")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                }
                 Toggle("登入時自動啟動", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, newValue in
                         settings.launchAtLogin = newValue

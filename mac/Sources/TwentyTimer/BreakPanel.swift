@@ -12,6 +12,14 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
 
     private let settings: AppSettings
 
+    /// 「繼續工作」按鈕在面板內的位置（SwiftUI 座標，原點左上），由 BreakView 回報。
+    var continueButtonFrame: CGRect = .zero {
+        didSet { performCursorMoveIfNeeded() }
+    }
+
+    /// 休息剛結束、還沒把游標移過去
+    private var wantsCursorMove = false
+
     init(settings: AppSettings, rootView: some View) {
         self.settings = settings
         super.init(
@@ -73,7 +81,39 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
     }
 
     func hidePanel() {
+        wantsCursorMove = false
         orderOut(nil)
+    }
+
+    // MARK: - 自動把游標移到「繼續工作」
+
+    /// 休息結束時呼叫。標記需求後由按鈕位置回報觸發，另補一個逾時重試以防萬一。
+    func requestCursorMove() {
+        guard settings.moveMouseToButton else { return }
+        wantsCursorMove = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+            self?.performCursorMoveIfNeeded()
+        }
+    }
+
+    private func performCursorMoveIfNeeded() {
+        guard wantsCursorMove, settings.moveMouseToButton, continueButtonFrame != .zero else { return }
+        // 使用者正在拖曳東西的話別搶游標，會毀掉他手上的操作
+        guard NSEvent.pressedMouseButtons == 0 else {
+            wantsCursorMove = false
+            return
+        }
+        guard let primary = NSScreen.screens.first else { return }
+
+        // SwiftUI 座標原點在左上、y 向下；AppKit 視窗座標原點在左下、y 向上
+        let inWindow = NSPoint(x: continueButtonFrame.midX,
+                               y: BreakPanel.size.height - continueButtonFrame.midY)
+        let onScreen = convertPoint(toScreen: inWindow)
+        // CGWarpMouseCursorPosition 用的是全域座標，原點在主螢幕左上
+        CGWarpMouseCursorPosition(CGPoint(x: onScreen.x, y: primary.frame.maxY - onScreen.y))
+        CGAssociateMouseAndMouseCursorPosition(1)
+
+        wantsCursorMove = false
     }
 }
 
@@ -82,6 +122,8 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
 struct BreakView: View {
     @ObservedObject var engine: TimerEngine
     @ObservedObject var settings: AppSettings
+    /// 回報「繼續工作」按鈕的位置，供面板把游標移過去
+    var onContinueButtonFrame: (CGRect) -> Void = { _ in }
 
     private var progress: Double {
         guard settings.restDuration > 0 else { return 1 }
@@ -147,6 +189,17 @@ struct BreakView: View {
             .controlSize(.large)
             .buttonStyle(.borderedProminent)
             .keyboardShortcut(.defaultAction)
+            // 直接回呼而不用 preference：SwiftUI 不會把 .background 子樹的
+            // preference 往上傳給父層，走 preference 這條路收不到值。
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear { onContinueButtonFrame(geo.frame(in: .global)) }
+                        .onChange(of: geo.frame(in: .global)) { _, rect in
+                            onContinueButtonFrame(rect)
+                        }
+                }
+            )
         }
     }
 }

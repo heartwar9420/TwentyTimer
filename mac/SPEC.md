@@ -33,6 +33,14 @@ working ────────▶ pendingBreak ──────────�
 | `resting` | 休息倒數，彈窗顯示。**刻意不因閒置而暫停**——離座發呆正是我們要的 |
 | `awaitingContinue` | 休息完成，彈窗停留直到使用者點擊。不點就不會開始下一輪 |
 
+進入 `awaitingContinue` 時，若 `moveMouseToButton` 開啟就把游標移到「繼續工作」按鈕中心。
+按鈕是這個階段才出現的，位置要等版面計算完才知道，因此採「標記需求 → 收到按鈕位置時執行」
+並加上逾時重試。若當下有按鍵被按住（使用者正在拖曳）則跳過，不搶游標。
+
+macOS 實作注意：不要用 SwiftUI preference 從 `.background` 子樹回報按鈕位置，
+SwiftUI 不會把 `.background` / `.overlay` 子樹的 preference 往上傳給父層，值會永遠是預設值。
+改用 GeometryReader 直接呼叫回呼。
+
 ### 計時精度
 
 每 0.5 秒 tick 一次，以兩次 tick 的實際時間差累加，不用單純遞減，避免長時間漂移。
@@ -60,6 +68,7 @@ working ────────▶ pendingBreak ──────────�
 | 浮在全螢幕之上 | `NSPanel` + `.fullScreenAuxiliary` + `.canJoinAllSpaces` | `WS_EX_TOPMOST` + `WS_EX_NOACTIVATE` |
 | 不搶焦點 | `.nonactivatingPanel` | `WS_EX_NOACTIVATE` |
 | 開機自啟 | `SMAppService.mainApp` | 登錄檔 `Run` 或工作排程器 |
+| 移動游標 | `CGWarpMouseCursorPosition`（**不需輔助使用權限**） | `SetCursorPos` |
 | 提示音 | AVAudioEngine 播放內建音效並套用增益 | WASAPI / XAudio2，同樣需要能放大 |
 
 **注意麥克風偵測的實作細節**：只檢查有輸入聲道的裝置。macOS 把 AirPods 的麥克風與喇叭
@@ -87,6 +96,7 @@ Windows 版要確保有等效的區分。
   "soundRepeat": 2,
   "deferWhenMicInUse": true,
   "showTimeInMenuBar": true,
+  "moveMouseToButton": true,
   "panelX": 1626,
   "panelY": 894
 }

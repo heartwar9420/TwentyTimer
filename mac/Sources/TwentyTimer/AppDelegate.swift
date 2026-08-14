@@ -21,7 +21,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         engine = TimerEngine(settings: settings, stats: stats)
         engine.onEnterRest = { [weak self] in self?.breakPanel.show() }
-        engine.onRestFinished = { [weak self] in self?.breakPanel.show() }
+        engine.onRestFinished = { [weak self] in
+            self?.breakPanel.show()
+            self?.breakPanel.requestCursorMove()
+        }
         engine.onResumeWork = { [weak self] in self?.breakPanel.hidePanel() }
 
         setUpStatusItem()
@@ -105,9 +108,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - 休息彈窗
 
     private func setUpBreakPanel() {
-        breakPanel = BreakPanel(
-            settings: settings,
-            rootView: BreakView(engine: engine, settings: settings))
+        // 面板要先存在才能接收按鈕位置，用一個之後才填的參考把兩邊接起來
+        var panelRef: BreakPanel?
+        let view = BreakView(engine: engine, settings: settings) { frame in
+            panelRef?.continueButtonFrame = frame
+        }
+        breakPanel = BreakPanel(settings: settings, rootView: view)
+        panelRef = breakPanel
         breakPanel.moveToPreferredPosition()
     }
 
