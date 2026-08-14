@@ -20,6 +20,11 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
     /// 休息剛結束、還沒把游標移過去
     private var wantsCursorMove = false
 
+    /// 自動移動游標之前，使用者原本的游標位置（CG 全域座標）
+    private var cursorOriginBeforeMove: CGPoint?
+    /// 我們把游標放進去的按鈕範圍（CG 全域座標），用來判斷使用者之後有沒有自己移開
+    private var buttonScreenRect: CGRect?
+
     init(settings: AppSettings, rootView: some View) {
         self.settings = settings
         super.init(
@@ -103,17 +108,68 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
             wantsCursorMove = false
             return
         }
-        guard let primary = NSScreen.screens.first else { return }
+        guard let rect = buttonRectInGlobalCoordinates() else { return }
 
-        // SwiftUI 座標原點在左上、y 向下；AppKit 視窗座標原點在左下、y 向上
-        let inWindow = NSPoint(x: continueButtonFrame.midX,
-                               y: BreakPanel.size.height - continueButtonFrame.midY)
-        let onScreen = convertPoint(toScreen: inWindow)
-        // CGWarpMouseCursorPosition 用的是全域座標，原點在主螢幕左上
-        CGWarpMouseCursorPosition(CGPoint(x: onScreen.x, y: primary.frame.maxY - onScreen.y))
-        CGAssociateMouseAndMouseCursorPosition(1)
+        cursorOriginBeforeMove = currentCursorPosition()
+        buttonScreenRect = rect
+        warpCursor(to: CGPoint(x: rect.midX, y: rect.midY))
 
         wantsCursorMove = false
+    }
+
+    /// 使用者按下「繼續工作」之後，把游標送回他原本的位置
+    func restoreCursorIfNeeded() {
+        defer {
+            cursorOriginBeforeMove = nil
+            buttonScreenRect = nil
+        }
+        guard settings.moveMouseToButton, settings.restoreCursorAfterClick,
+              let origin = cursorOriginBeforeMove,
+              let rect = buttonScreenRect else { return }
+        // 游標已經不在按鈕上，代表使用者自己移開了（例如改用鍵盤按 Return）。
+        // 這時候再把游標搬回去反而是干擾。
+        guard rect.contains(currentCursorPosition()) else { return }
+        // 原本的位置可能落在已經拔掉的外接螢幕上
+        guard NSScreen.screens.contains(where: { globalFrame(of: $0).contains(origin) }) else { return }
+
+        warpCursor(to: origin)
+    }
+
+    // MARK: - 座標換算
+
+    /// CGWarpMouseCursorPosition 用的是全域座標：原點在主螢幕左上、y 向下。
+    /// AppKit 的 NSEvent.mouseLocation / NSScreen.frame 則是原點左下、y 向上。
+    private var primaryScreenTop: CGFloat {
+        NSScreen.screens.first?.frame.maxY ?? 0
+    }
+
+    private func currentCursorPosition() -> CGPoint {
+        let p = NSEvent.mouseLocation
+        return CGPoint(x: p.x, y: primaryScreenTop - p.y)
+    }
+
+    private func globalFrame(of screen: NSScreen) -> CGRect {
+        let f = screen.frame
+        return CGRect(x: f.minX, y: primaryScreenTop - f.maxY, width: f.width, height: f.height)
+    }
+
+    /// 「繼續工作」按鈕在螢幕上的範圍
+    private func buttonRectInGlobalCoordinates() -> CGRect? {
+        guard continueButtonFrame != .zero else { return nil }
+        // SwiftUI 座標原點在左上、y 向下；AppKit 視窗座標原點在左下、y 向上
+        let bottomLeftInWindow = NSPoint(x: continueButtonFrame.minX,
+                                         y: BreakPanel.size.height - continueButtonFrame.maxY)
+        let onScreen = convertPoint(toScreen: bottomLeftInWindow)
+        return CGRect(x: onScreen.x,
+                      y: primaryScreenTop - (onScreen.y + continueButtonFrame.height),
+                      width: continueButtonFrame.width,
+                      height: continueButtonFrame.height)
+    }
+
+    private func warpCursor(to point: CGPoint) {
+        CGWarpMouseCursorPosition(point)
+        // warp 之後要重新關聯，否則後續的滑鼠移動會有偏移
+        CGAssociateMouseAndMouseCursorPosition(1)
     }
 }
 

@@ -25,7 +25,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.breakPanel.show()
             self?.breakPanel.requestCursorMove()
         }
-        engine.onResumeWork = { [weak self] in self?.breakPanel.hidePanel() }
+        engine.onResumeWork = { [weak self] in
+            self?.breakPanel.restoreCursorIfNeeded()
+            self?.breakPanel.hidePanel()
+        }
 
         setUpStatusItem()
         setUpPopover()

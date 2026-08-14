@@ -83,6 +83,13 @@ struct SettingsView: View {
                     Text("回座後不用找按鈕，直接按左鍵即可。若當下正在拖曳東西會自動跳過，不會搶走游標。")
                         .font(.system(size: 10))
                         .foregroundStyle(.secondary)
+
+                    Toggle("按下「繼續工作」後把游標移回原本的位置", isOn: $settings.restoreCursorAfterClick)
+                        .disabled(!settings.moveMouseToButton)
+                        .padding(.top, 4)
+                    Text("若你在按鈕出現後自己把游標移開了（例如改按 Return），就不會再搬動它。")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
                 }
                 Toggle("登入時自動啟動", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, newValue in

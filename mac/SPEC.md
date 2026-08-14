@@ -37,6 +37,11 @@ working ────────▶ pendingBreak ──────────�
 按鈕是這個階段才出現的，位置要等版面計算完才知道，因此採「標記需求 → 收到按鈕位置時執行」
 並加上逾時重試。若當下有按鍵被按住（使用者正在拖曳）則跳過，不搶游標。
 
+移動前要記下原本的游標位置與按鈕的螢幕範圍。使用者按下「繼續工作」後，
+若 `restoreCursorAfterClick` 開啟就把游標移回原位——但只有在游標仍落在按鈕範圍內時才做。
+游標已經不在按鈕上代表使用者自己移開了（例如改按 Return），這時搬動游標反而是干擾。
+還原前也要確認原位置仍落在某個螢幕上，外接螢幕可能已經拔掉了。
+
 macOS 實作注意：不要用 SwiftUI preference 從 `.background` 子樹回報按鈕位置，
 SwiftUI 不會把 `.background` / `.overlay` 子樹的 preference 往上傳給父層，值會永遠是預設值。
 改用 GeometryReader 直接呼叫回呼。
@@ -97,6 +102,7 @@ Windows 版要確保有等效的區分。
   "deferWhenMicInUse": true,
   "showTimeInMenuBar": true,
   "moveMouseToButton": true,
+  "restoreCursorAfterClick": true,
   "panelX": 1626,
   "panelY": 894
 }
