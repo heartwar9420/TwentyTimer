@@ -12,25 +12,27 @@
 
 ##  版本
 
-本專案目前有兩個各自獨立的實作：
+本專案目前有三個各自獨立的實作：
 
 | 目錄 | 平台 | 技術 | 說明 |
 |---|---|---|---|
-| [`src/`](src) | Windows | Python + customtkinter | 原始版本，浮動視窗形式 |
+| [`src/`](src) | Windows | Python + customtkinter | 最早的版本，浮動視窗形式 |
 | [`mac/`](mac) | macOS | Swift + SwiftUI | macOS 原生版，選單列常駐 |
+| [`windows/`](windows) | Windows | C# + WinForms | Windows 原生版，系統匣常駐，`mac/` 版的移植 |
 
-兩版的設定與統計檔案格式共用，詳見 [`mac/SPEC.md`](mac/SPEC.md)。
+`mac/` 與 `windows/` 兩版的設定與統計檔案格式共用，詳見 [`mac/SPEC.md`](mac/SPEC.md)；
+`src/` 是較早期、獨立的實作，格式不同。
 
-### macOS 版的設計差異
+### macOS 版／Windows 原生版的設計差異（相對於 `src/`）
 
-macOS 版不是單純的移植，有幾個經過實際使用後調整的行為：
+`mac/` 與 `windows/` 不是單純的移植，有幾個經過實際使用後調整的行為：
 
 - **移除背景音樂**。持續 30 秒的音樂是用最吵的方式解決一個只需要 1 秒的需求，改成休息結束時的短提示音（音量可放大到 300% 以蓋過背景音樂）。
 - **休息結束不自動回到工作**，會停在「休息完成」等你按下繼續。這樣離座回來一定看得到狀態，也不會空轉浪費一輪。
 - **閒置門檻從 10 秒改為 2 分鐘**。10 秒太敏感，安靜看文件時會被誤判。
 - **不做全螢幕遮罩**，改用右上角低調的小面板，在辦公室不顯眼。
 - **開會時自動延後**：偵測到有 App 正在使用麥克風就先不打擾。
-- **閒置偵測不需要任何系統權限**（Windows 版用的 `pynput` 在 macOS 需要輸入監控授權）。
+- **閒置偵測不需要任何系統權限**（`src/` 版用的 `pynput` 在 macOS 需要輸入監控授權；`windows/` 版改用 `GetLastInputInfo`，同樣不需要權限）。
 
 ---
 
@@ -69,6 +71,17 @@ open build/TwentyTimer.app
 只需要 Command Line Tools，不需要完整的 Xcode。
 啟動後常駐在選單列，詳見 [`mac/README.md`](mac/README.md)。
 
+### Windows 原生版
+
+```powershell
+cd windows
+.\build.ps1
+.\build\TwentyTimer.exe
+```
+
+只需要 [.NET 8 SDK](https://dotnet.microsoft.com/download)，不需要 Visual Studio。
+啟動後常駐在系統匣，詳見 [`windows/README.md`](windows/README.md)。
+
 
 ---
 
@@ -79,9 +92,9 @@ open build/TwentyTimer.app
 
 ##  未來改進方向
 
-* Windows 版：加入 GUI 介面設定（可直接調整工作/休息時間）
-* Windows 版：比照 macOS 版重新設計提醒方式
-* macOS 版：全域快捷鍵、螢幕分享偵測
+* ~~Windows 版：比照 macOS 版重新設計提醒方式~~ —— 已完成，見 [`windows/`](windows)
+* `src/` 版：加入 GUI 介面設定（可直接調整工作/休息時間）
+* macOS 版／Windows 原生版：全域快捷鍵、螢幕分享偵測
 
 ---
 
