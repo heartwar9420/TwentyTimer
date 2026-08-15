@@ -7,7 +7,7 @@ namespace TwentyTimer;
 /// <summary>點選系統匣圖示後彈出的面板。對應 mac 版 MenuView.swift + NSPopover(.transient)。</summary>
 sealed class TrayPopupForm : Form
 {
-    private const int Width = 260;
+    private const int PopupWidth = 260;
 
     private readonly TimerEngine _engine;
     private readonly AppSettings _settings;
@@ -42,7 +42,7 @@ sealed class TrayPopupForm : Form
         StartPosition = FormStartPosition.Manual;
         ShowInTaskbar = false;
         TopMost = true;
-        ClientSize = new Size(Width, 300);
+        ClientSize = new Size(PopupWidth, 300);
 
         var dark = IsSystemDarkTheme();
         BackColor = dark ? Color.FromArgb(32, 32, 32) : Color.White;
@@ -74,7 +74,7 @@ sealed class TrayPopupForm : Form
 
         _headerTime.AutoSize = false;
         _headerTime.Font = new Font("Segoe UI Light", 22f);
-        _headerTime.SetBounds(48, y - 4, Width - 64, 36);
+        _headerTime.SetBounds(48, y - 4, PopupWidth - 64, 36);
         Controls.Add(_headerGlyph);
         Controls.Add(_headerTime);
         y += 34;
@@ -82,7 +82,7 @@ sealed class TrayPopupForm : Form
         _headerStatus.AutoSize = false;
         _headerStatus.Font = new Font("Segoe UI", 9f);
         _headerStatus.ForeColor = secondary;
-        _headerStatus.SetBounds(16, y, Width - 32, 18);
+        _headerStatus.SetBounds(16, y, PopupWidth - 32, 18);
         Controls.Add(_headerStatus);
         y += 26;
 
@@ -97,11 +97,11 @@ sealed class TrayPopupForm : Form
 
         var streakLabel = new Label { Text = "連續天數", ForeColor = secondary, Font = new Font("Segoe UI", 8f) };
         streakLabel.AutoSize = false;
-        streakLabel.SetBounds(Width - 16 - 110, y + 20, 110, 16);
+        streakLabel.SetBounds(PopupWidth - 16 - 110, y + 20, 110, 16);
         streakLabel.TextAlign = ContentAlignment.MiddleRight;
         _streakValue.AutoSize = false;
         _streakValue.Font = new Font("Segoe UI", 13f, FontStyle.Bold);
-        _streakValue.SetBounds(Width - 16 - 110, y, 110, 22);
+        _streakValue.SetBounds(PopupWidth - 16 - 110, y, 110, 22);
         _streakValue.TextAlign = ContentAlignment.MiddleRight;
 
         Controls.Add(_todayValue);
@@ -112,10 +112,10 @@ sealed class TrayPopupForm : Form
 
         y = AddDivider(y);
 
-        _pauseButton.SetBounds(16, y, (Width - 32 - 8) / 2, 30);
+        _pauseButton.SetBounds(16, y, (PopupWidth - 32 - 8) / 2, 30);
         _pauseButton.Click += (_, _) => _engine.IsManuallyPaused = !_engine.IsManuallyPaused;
         _breakNowButton.Text = "立刻休息";
-        _breakNowButton.SetBounds(16 + (Width - 32 - 8) / 2 + 8, y, (Width - 32 - 8) / 2, 30);
+        _breakNowButton.SetBounds(16 + (PopupWidth - 32 - 8) / 2 + 8, y, (PopupWidth - 32 - 8) / 2, 30);
         _breakNowButton.Click += (_, _) => _engine.BreakNow();
         StyleSecondaryButton(_pauseButton);
         StyleSecondaryButton(_breakNowButton);
@@ -123,7 +123,7 @@ sealed class TrayPopupForm : Form
         Controls.Add(_breakNowButton);
         y += 38;
 
-        _dndRow.SetBounds(16, y, Width - 32, 30);
+        _dndRow.SetBounds(16, y, PopupWidth - 32, 30);
         _dndLabel.Text = "勿擾";
         _dndLabel.ForeColor = secondary;
         _dndLabel.Font = new Font("Segoe UI", 8f);
@@ -131,13 +131,13 @@ sealed class TrayPopupForm : Form
         _dndLabel.TextAlign = ContentAlignment.MiddleLeft;
         _dndLabel.SetBounds(0, 0, 32, 30);
         _snooze30Button.Text = "30 分";
-        _snooze30Button.SetBounds(36, 0, (Width - 32 - 36) / 2 - 4, 30);
+        _snooze30Button.SetBounds(36, 0, (PopupWidth - 32 - 36) / 2 - 4, 30);
         _snooze30Button.Click += (_, _) => _engine.Snooze(30);
         _snooze60Button.Text = "60 分";
-        _snooze60Button.SetBounds(36 + (Width - 32 - 36) / 2, 0, (Width - 32 - 36) / 2 - 4, 30);
+        _snooze60Button.SetBounds(36 + (PopupWidth - 32 - 36) / 2, 0, (PopupWidth - 32 - 36) / 2 - 4, 30);
         _snooze60Button.Click += (_, _) => _engine.Snooze(60);
         _cancelSnoozeButton.Text = "取消勿擾";
-        _cancelSnoozeButton.SetBounds(0, 0, Width - 32, 30);
+        _cancelSnoozeButton.SetBounds(0, 0, PopupWidth - 32, 30);
         _cancelSnoozeButton.Click += (_, _) => _engine.CancelSnooze();
         StyleSecondaryButton(_snooze30Button);
         StyleSecondaryButton(_snooze60Button);
@@ -156,13 +156,13 @@ sealed class TrayPopupForm : Form
         var statsLink = MakeLinkButton("統計", () => OpenStats?.Invoke());
         statsLink.SetBounds(84, y, 44, 24);
         var quitLink = MakeLinkButton("結束", () => Quit?.Invoke());
-        quitLink.SetBounds(Width - 16 - 44, y, 44, 24);
+        quitLink.SetBounds(PopupWidth - 16 - 44, y, 44, 24);
         Controls.Add(settingsLink);
         Controls.Add(statsLink);
         Controls.Add(quitLink);
         y += 34;
 
-        ClientSize = new Size(Width, y);
+        ClientSize = new Size(PopupWidth, y);
     }
 
     private int AddDivider(int y)
@@ -171,7 +171,7 @@ sealed class TrayPopupForm : Form
         {
             BackColor = Color.FromArgb(60, 128, 128, 128),
         };
-        line.SetBounds(16, y, Width - 32, 1);
+        line.SetBounds(16, y, PopupWidth - 32, 1);
         Controls.Add(line);
         return y + 10;
     }
@@ -209,7 +209,7 @@ sealed class TrayPopupForm : Form
     {
         RefreshContent();
         var area = Screen.FromPoint(anchor).WorkingArea;
-        var x = Math.Min(anchor.X, area.Right - Width - 8);
+        var x = Math.Min(anchor.X, area.Right - PopupWidth - 8);
         var y = Math.Min(anchor.Y, area.Bottom - Height - 8);
         x = Math.Max(area.Left + 8, x);
         y = Math.Max(area.Top + 8, y);

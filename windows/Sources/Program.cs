@@ -9,7 +9,7 @@ static class Program
     [STAThread]
     static void Main()
     {
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        // 高 DPI 設定改由 Sources/app.manifest 的 PerMonitorV2 宣告負責
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
@@ -51,6 +51,7 @@ sealed class TrayApplicationContext : ApplicationContext
         _stats = new StatsStore();
         _engine = new TimerEngine(_settings, _stats);
 
+        _breakPanel = new BreakPanelForm(_settings, _engine);
         _engine.OnEnterRest += () => _breakPanel.ShowPanel();
         _engine.OnRestFinished += () =>
         {
@@ -63,7 +64,6 @@ sealed class TrayApplicationContext : ApplicationContext
             _breakPanel.HidePanel();
         };
 
-        _breakPanel = new BreakPanelForm(_settings, _engine);
         _popup = new TrayPopupForm(_engine, _settings, _stats)
         {
             OpenSettings = ShowSettings,

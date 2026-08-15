@@ -1,4 +1,4 @@
-# 建置 TwentyTimer.exe（單一檔案、免安裝 .NET Runtime）
+﻿# 建置 TwentyTimer.exe（單一檔案、免安裝 .NET Runtime）
 #
 # 需要 .NET 8 SDK：https://dotnet.microsoft.com/download
 # 產出：build/TwentyTimer.exe

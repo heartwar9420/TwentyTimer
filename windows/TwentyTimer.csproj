@@ -11,6 +11,7 @@
     <ApplicationManifest>Sources/app.manifest</ApplicationManifest>
     <Version>0.1.0</Version>
     <InvariantGlobalization>false</InvariantGlobalization>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
 
   <ItemGroup>
