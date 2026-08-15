@@ -2,7 +2,7 @@
 
 依照 20-20-20 原則的護眼提醒工具：每工作 20 分鐘，看向 20 英尺（約 6 公尺）外 20 秒。
 
-Windows 原生版（C# + WinForms + Win32 API），系統匣常駐。行為與資料格式對照 [`mac/SPEC.md`](../mac/SPEC.md) 逐條實作，是 `mac/` 版的移植，不是 `src/` 那個較早期的 Python 版本。
+Windows 原生版（C# + WinForms + Win32 API），系統匣常駐。行為與資料格式對照 [`mac/SPEC.md`](../mac/SPEC.md) 逐條實作，是 `mac/` 版的移植。
 
 ## 特色
 
