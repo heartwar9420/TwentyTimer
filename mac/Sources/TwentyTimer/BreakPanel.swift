@@ -8,7 +8,7 @@ import SwiftUI
 /// 加入 fullScreenAuxiliary 才能浮在全螢幕 App 之上——這很重要，因為全螢幕是常態。
 final class BreakPanel: NSPanel, NSWindowDelegate {
 
-    static let size = NSSize(width: 280, height: 148)
+    static let size = NSSize(width: 280, height: 176)
 
     private let settings: AppSettings
 
@@ -220,6 +220,15 @@ struct BreakView: View {
             ProgressView(value: progress)
                 .progressViewStyle(.linear)
                 .tint(.accentColor)
+
+            Button {
+                engine.continueWork()
+            } label: {
+                Text("跳過這次休息")
+                    .font(.system(size: 11))
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
         }
     }
 
