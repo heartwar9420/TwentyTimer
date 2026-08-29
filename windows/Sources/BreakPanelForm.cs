@@ -8,13 +8,13 @@ namespace TwentyTimer;
 /// <summary>
 /// 休息提示小面板。
 ///
-/// 刻意做得低調：280×148，右上角貼近工作列上方，看起來像一個系統小元件。
+/// 刻意做得低調：280×176，右上角貼近工作列上方，看起來像一個系統小元件。
 /// 不搶焦點（WS_EX_NOACTIVATE），所以你正在打的字不會被中斷。
 /// 對應 mac 版的 BreakPanel.swift + BreakView。
 /// </summary>
 sealed class BreakPanelForm : Form
 {
-    public static readonly Size PanelSize = new(280, 148);
+    public static readonly Size PanelSize = new(280, 176);
 
     private readonly AppSettings _settings;
     private readonly TimerEngine _engine;
@@ -22,6 +22,7 @@ sealed class BreakPanelForm : Form
     private readonly Label _restingIcon = new();
     private readonly Label _restingClock = new();
     private readonly ProgressStrip _progress = new();
+    private readonly LinkLabel _skipRestLink = new();
     private readonly Panel _restingView = new();
 
     private readonly Label _finishedIcon = new();
@@ -117,9 +118,21 @@ sealed class BreakPanelForm : Form
         _progress.AccentColor = AccentColor;
         _progress.TrackColor = dark ? Color.FromArgb(70, 70, 70) : Color.FromArgb(224, 224, 224);
 
+        _skipRestLink.Text = "跳過這次休息";
+        _skipRestLink.Font = new Font("Segoe UI", 8f, FontStyle.Regular);
+        _skipRestLink.LinkColor = SecondaryColor(dark);
+        _skipRestLink.ActiveLinkColor = SecondaryColor(dark);
+        _skipRestLink.VisitedLinkColor = SecondaryColor(dark);
+        _skipRestLink.LinkBehavior = LinkBehavior.HoverUnderline;
+        _skipRestLink.AutoSize = false;
+        _skipRestLink.TextAlign = ContentAlignment.MiddleCenter;
+        _skipRestLink.SetBounds(0, 128, PanelSize.Width, 20);
+        _skipRestLink.LinkClicked += (_, _) => _engine.ContinueWork();
+
         _restingView.Controls.Add(_restingIcon);
         _restingView.Controls.Add(_restingClock);
         _restingView.Controls.Add(_progress);
+        _restingView.Controls.Add(_skipRestLink);
     }
 
     private void BuildFinishedView(bool dark)
