@@ -27,7 +27,7 @@ static class TrayIconFactory
 
     private static Color GlyphColor(TimerEngine engine)
     {
-        if (engine.IsManuallyPaused || engine.IsIdlePaused) return Color.Gray;
+        if (engine.IsManuallyPaused || engine.IsIdlePaused) return Color.FromArgb(220, 38, 38);
         if (engine.IsSnoozing) return Color.MediumPurple;
         return engine.CurrentPhase switch
         {
@@ -75,8 +75,9 @@ static class TrayIconFactory
                     g.DrawEllipse(pen, 6, 6, 20, 20);
                     break;
                 default:
-                    // 暫停 / 勿擾：實心方塊
-                    g.FillRectangle(brush, 8, 8, 16, 16);
+                    // 暫停：紅燈（實心圓 + 深色外框，模擬警示燈，避免被忽略）
+                    g.FillEllipse(brush, 6, 6, 20, 20);
+                    g.DrawEllipse(pen, 6, 6, 20, 20);
                     break;
             }
         }
