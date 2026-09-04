@@ -20,6 +20,7 @@ sealed class TrayPopupForm : Form
     private readonly Label _streakValue = new();
     private readonly Button _pauseButton = new();
     private readonly Button _breakNowButton = new();
+    private readonly Button _continueButton = new();
     private readonly Panel _dndRow = new();
     private readonly Label _dndLabel = new();
     private readonly Button _snooze30Button = new();
@@ -121,6 +122,13 @@ sealed class TrayPopupForm : Form
         StyleSecondaryButton(_breakNowButton);
         Controls.Add(_pauseButton);
         Controls.Add(_breakNowButton);
+
+        // 休息完成時取代上面那排（此時暫停/立刻休息都沒有意義），
+        // 備援用：BreakPanelForm 若沒顯示出來，這裡永遠點得到。
+        _continueButton.Text = "繼續工作";
+        _continueButton.SetBounds(16, y, PopupWidth - 32, 30);
+        _continueButton.Click += (_, _) => _engine.ContinueWork();
+        Controls.Add(_continueButton);
         y += 38;
 
         _dndRow.SetBounds(16, y, PopupWidth - 32, 30);
@@ -228,6 +236,11 @@ sealed class TrayPopupForm : Form
 
         _todayValue.Text = _stats.TodayCount.ToString();
         _streakValue.Text = _stats.CurrentStreak.ToString();
+
+        var awaitingContinue = _engine.CurrentPhase == TimerEngine.Phase.AwaitingContinue;
+        _continueButton.Visible = awaitingContinue;
+        _pauseButton.Visible = !awaitingContinue;
+        _breakNowButton.Visible = !awaitingContinue;
 
         _pauseButton.Text = _engine.IsManuallyPaused ? "繼續計時" : "暫停計時";
         _breakNowButton.Enabled = _engine.CurrentPhase != TimerEngine.Phase.Resting
