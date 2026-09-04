@@ -13,6 +13,9 @@ struct MenuView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             header
+            if engine.phase == .awaitingContinue {
+                continueButton
+            }
             Divider()
             statsRow
             Divider()
@@ -37,6 +40,19 @@ struct MenuView: View {
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
         }
+    }
+
+    /// 休息完成時的備援按鈕：BreakPanel 若因切換畫面等原因沒顯示出來，
+    /// 這裡永遠點得到，不會卡死在 awaitingContinue 出不來。
+    private var continueButton: some View {
+        Button {
+            engine.continueWork()
+        } label: {
+            Text("繼續工作")
+                .frame(maxWidth: .infinity)
+        }
+        .controlSize(.large)
+        .buttonStyle(.borderedProminent)
     }
 
     private var statsRow: some View {
