@@ -34,7 +34,9 @@ final class BreakPanel: NSPanel, NSWindowDelegate {
             defer: false)
 
         isFloatingPanel = true
-        level = .statusBar
+        // .screenSaver 是最高的可用視窗層級，會蓋過全螢幕影片、視訊會議這類
+        // 自己也搶很高層級的 App；原本的 .statusBar 太低，實測會被蓋住。
+        level = .screenSaver
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
         isOpaque = false
         backgroundColor = .clear
