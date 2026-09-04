@@ -253,7 +253,11 @@ sealed class BreakPanelForm : Form
         MoveToPreferredPosition();
         UpdateContent();
         if (!Visible) Show();
-        else BringToFront();
+        // 其他也搶 TOPMOST 的視窗（視訊會議、全螢幕播放器）可能疊在上面，
+        // BringToFront() 對 NOACTIVATE 視窗不保證真的重新排到最前，改直接呼叫
+        // SetWindowPos 強制插到 TOPMOST 群組最前。對應 mac 版把 level 提到 .screenSaver。
+        NativeMethods.SetWindowPos(Handle, NativeMethods.HWND_TOPMOST, 0, 0, 0, 0,
+            NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOACTIVATE);
     }
 
     public void HidePanel()
